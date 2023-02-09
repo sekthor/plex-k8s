@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: plex
+spec:
+  selector:
+    matchLabels:
+      app: plex
+  template:
+    metadata:
+      labels:
+        app: plex
+    spec:
+      containers:
+
+      - name: plex
+        image: linuxserver/plex
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+
+        ports:
+        - containerPort: 32400
+
+        env:
+          - name: PUID
+            value: "1000"
+          - name: PGID
+            value: "1000"
+          - name: DOCKER
+            value: "1000"
+
+        volumeMounts:
+          - mountPath: /data/tv
+            name: plex-series
+          - mountPath: /data/movies
+            name: plex-movies
+
+      volumes:
+        - name: plex-movies
+          persistentVolumeClaim:
+            claimName: plex-movies
+        - name: plex-series
+          persistentVolumeClaim:
+            claimName: plex-series
